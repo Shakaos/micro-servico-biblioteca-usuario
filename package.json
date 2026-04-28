@@ -1,0 +1,32 @@
+{
+  "name": "library-service",
+  "version": "1.0.0",
+  "description": "🎮 Microsserviço da Biblioteca do Usuário - GameVerse. Gerencia jogos comprados e gift cards dos usuários.",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "echo \"Para testar, use o arquivo tests.http com REST Client\"",
+    "setup-db": "echo \"Execute o arquivo schema.sql no MySQL Workbench\""
+  },
+  "keywords": ["gameverse", "library", "microservice", "nodejs", "mysql"],
+  "author": "André de Oliveira Braga e Izadora Lima de Mendonça",
+  "contributors": [
+    "André de Oliveira Braga",
+    "Izadora Lima de Mendonça"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.4.0",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.9.0",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

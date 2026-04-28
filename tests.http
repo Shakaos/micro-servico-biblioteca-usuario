@@ -1,0 +1,54 @@
+# 🧪 TESTES DA API - Biblioteca do Usuário GameVerse
+# Este arquivo contém exemplos de como testar meus endpoints
+# Use com REST Client no VS Code ou qualquer ferramenta HTTP
+
+### 1. Testar adicionar item manualmente
+POST http://localhost:3005/library/add
+Content-Type: application/json
+
+{
+  "user_id": 1,
+  "type": "game",
+  "item_id": 999,
+  "title": "Test Game",
+  "platform": "Steam"
+}
+
+### 2. Ver biblioteca do usuário 1
+GET http://localhost:3005/library/user/1
+
+### 3. Ver biblioteca do usuário 2
+GET http://localhost:3005/library/user/2
+
+### 4. Simular pagamento aprovado (integração)
+POST http://localhost:3005/library/integration/payment-approved
+Content-Type: application/json
+
+{
+  "user_id": 1,
+  "type": "gift_card",
+  "item_id": 888,
+  "title": "Epic Games Gift Card $25",
+  "platform": "Epic Games"
+}
+
+### 5. Testar erro - dados faltando
+POST http://localhost:3005/library/add
+Content-Type: application/json
+
+{
+  "user_id": 1
+  // Faltam type, item_id, title
+}
+
+### 6. Testar erro - tipo inválido
+POST http://localhost:3005/library/add
+Content-Type: application/json
+
+{
+  "user_id": 1,
+  "type": "filme",  // Tipo inválido
+  "item_id": 123,
+  "title": "Test Movie",
+  "platform": "Netflix"
+}
