@@ -4,13 +4,15 @@ const model = require('../models/libraryModel');
 // ADICIONAR ITEM NA BIBLIOTECA
 // ===============================
 exports.addItem = (req, res) => {
-  const { user_id, type, item_id, title } = req.body;
+  // Usa o user_id do token JWT (mais seguro)
+  const user_id = req.auth.id;
+  const { type, item_id, title } = req.body;
 
   // Validação
-  if (!user_id || !type || !item_id || !title) {
+  if (!type || !item_id || !title) {
     return res.json({
       success: false,
-      message: 'Dados obrigatórios faltando: user_id, type, item_id, title'
+      message: 'Dados obrigatórios faltando: type, item_id, title'
     });
   }
 
@@ -42,14 +44,8 @@ exports.addItem = (req, res) => {
 // BUSCAR BIBLIOTECA DO USUÁRIO
 // ===============================
 exports.getLibrary = (req, res) => {
-  const user_id = req.params.user_id;
-
-  if (!user_id || isNaN(user_id)) {
-    return res.json({
-      success: false,
-      message: 'ID do usuário inválido'
-    });
-  }
+  // Usa o user_id do token JWT (mais seguro)
+  const user_id = req.auth.id;
 
   model.getUserLibrary(user_id, (err, results) => {
     if (err) {
@@ -72,9 +68,11 @@ exports.getLibrary = (req, res) => {
 // INTEGRAÇÃO - PAGAMENTO APROVADO
 // ===============================
 exports.paymentApproved = (req, res) => {
-  const { user_id, type, item_id, title } = req.body;
+  // Usa o user_id do token JWT (mais seguro)
+  const user_id = req.auth.id;
+  const { type, item_id, title } = req.body;
 
-  if (!user_id || !type || !item_id || !title) {
+  if (!type || !item_id || !title) {
     return res.json({
       success: false,
       message: 'Dados de pagamento incompletos'
