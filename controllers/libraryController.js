@@ -1,19 +1,12 @@
 const model = require('../models/libraryModel');
 
-// Este é o "cérebro" do nosso microsserviço!
-// O controller recebe as requisições HTTP, valida os dados,
-// chama as funções do model e retorna respostas apropriadas.
-// É como o gerente que coordena tudo.
-
-// Função para adicionar um item manualmente à biblioteca.
-// Pode ser usado para correções ou imports especiais.
+// ===============================
+// ADICIONAR ITEM NA BIBLIOTECA
+// ===============================
 exports.addItem = (req, res) => {
-  // Usa o user_id do token JWT para segurança (req.auth)
-  const user_id = req.auth?.id;
-  
-  // Validação básica dos dados obrigatórios
-  const { type, item_id, title } = req.body;
+  const { user_id, type, item_id, title } = req.body;
 
+  // Validação
   if (!user_id || !type || !item_id || !title) {
     return res.json({
       success: false,
@@ -21,7 +14,6 @@ exports.addItem = (req, res) => {
     });
   }
 
-  // Só aceitamos tipos válidos para manter consistência
   if (!['game', 'gift_card'].includes(type)) {
     return res.json({
       success: false,
@@ -29,7 +21,7 @@ exports.addItem = (req, res) => {
     });
   }
 
-  // Chama o model para adicionar o item
+  // Inserir no banco
   model.addItem({ user_id, type, item_id, title }, (err) => {
     if (err) {
       return res.json({
@@ -46,13 +38,12 @@ exports.addItem = (req, res) => {
   });
 };
 
-// Função que retorna toda a biblioteca de um usuário.
-// É chamada quando o usuário abre sua página de biblioteca.
+// ===============================
+// BUSCAR BIBLIOTECA DO USUÁRIO
+// ===============================
 exports.getLibrary = (req, res) => {
-  // Usa o user_id do token JWT para segurança (req.auth)
-  const user_id = req.auth?.id;
+  const user_id = req.params.user_id;
 
-  // Validação do ID do usuário
   if (!user_id || isNaN(user_id)) {
     return res.json({
       success: false,
@@ -60,7 +51,6 @@ exports.getLibrary = (req, res) => {
     });
   }
 
-  // Busca todos os itens do usuário
   model.getUserLibrary(user_id, (err, results) => {
     if (err) {
       return res.json({
@@ -78,14 +68,11 @@ exports.getLibrary = (req, res) => {
   });
 };
 
-// Esta é a função mais importante para integração!
-// É chamada AUTOMATICAMENTE pelo serviço de pagamentos quando uma compra é aprovada.
-// Garante que o usuário receba seu jogo/gift card na biblioteca.
+// ===============================
+// INTEGRAÇÃO - PAGAMENTO APROVADO
+// ===============================
 exports.paymentApproved = (req, res) => {
-  const data = req.body;
-
-  // Validações rigorosas pois isso vem de outro serviço
-  const { user_id, type, item_id, title } = data;
+  const { user_id, type, item_id, title } = req.body;
 
   if (!user_id || !type || !item_id || !title) {
     return res.json({
@@ -94,7 +81,6 @@ exports.paymentApproved = (req, res) => {
     });
   }
 
-  // Primeiro verifica se o usuário já tem esse item (evita duplicatas)
   model.checkItem(user_id, item_id, (err, results) => {
     if (err) {
       return res.json({
@@ -104,7 +90,6 @@ exports.paymentApproved = (req, res) => {
       });
     }
 
-    // Se já tem, informa que não precisa adicionar novamente
     if (results.length > 0) {
       return res.json({
         success: false,
@@ -112,8 +97,7 @@ exports.paymentApproved = (req, res) => {
       });
     }
 
-    // Se não tem, adiciona o item
-    model.addItem(data, (err) => {
+    model.addItem({ user_id, type, item_id, title }, (err) => {
       if (err) {
         return res.json({
           success: false,
