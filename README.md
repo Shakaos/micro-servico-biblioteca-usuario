@@ -15,39 +15,58 @@ Aqui eu mantenho a coleção digital de cada usuário organizada e acessível.
 
 - Node.js
 - Express.js
-- MySQL
-- CORS
+- PostgreSQL (Supabase)
+- JWT (RS256)
 
-## Estrutura de dados
+## Deploy no Render
 
-Tabela: `users_library`
+### 1. Configurar Supabase
+1. Acesse [supabase.com](https://supabase.com) e crie um projeto
+2. Vá em **Settings → Database** e copie as informações de conexão
+3. No **SQL Editor**, execute o conteúdo do arquivo `schema.sql`
 
-```sql
-CREATE TABLE users_library (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT NOT NULL,
-  type ENUM('game', 'gift_card') NOT NULL,
-  item_id INT NOT NULL,
-  title VARCHAR(255) NOT NULL,
-  platform VARCHAR(100),
-  acquired_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
+### 2. Deploy no Render
+1. Acesse [render.com](https://render.com) e faça login com GitHub
+2. Clique em **"New +"** → **"Web Service"**
+3. Selecione o repositório `micro-servico-biblioteca-usuario`
+4. Configure:
+
+| Campo | Valor |
+|-------|-------|
+| Name | library-service |
+| Build Command | `npm install` |
+| Start Command | `node app.js` |
+
+5. Em **Environment Variables**, adicione:
+
+| Variável | Valor |
+|----------|-------|
+| `DB_HOST` | (do Supabase: Settings → Database) |
+| `DB_USER` | postgres |
+| `DB_PASSWORD` | (sua senha do Supabase) |
+| `DB_NAME` | postgres |
+| `DB_PORT` | 5432 |
+| `JWT_ISSUER` | https://sistema-distribuido-trabalho-faculd.vercel.app |
+| `JWT_AUDIENCE` | internal-apis |
+| `JWT_PUBLIC_KEY_PEM` | (chave pública do PDF) |
+
+6. Clique em **"Create Web Service"**
+
+### URL do serviço
+Após o deploy, você terá uma URL como: `https://library-service-xxxx.onrender.com`
 
 ## Endpoints da API
 
-### POST /library/add
-Adiciona um item manualmente à biblioteca do usuário.
+**Lembre-se: Todas as rotas requerem token JWT no header `Authorization: Bearer <token>`**
 
-Exemplo de request:
-```json
-{
-  "user_id": 1,
-  "type": "game",
-  "item_id": 123,
-  "title": "The Witcher 3",
-  "platform": "Steam"
-}
+### GET /library/user/:id
+Busca a biblioteca de um usuário.
+
+### POST /library/add
+Adiciona um item à biblioteca.
+
+### POST /library/integration/payment-approved
+Integração com pagamento (adiciona item após aprovação).
 ```
 
 ### GET /library/user/:user_id
