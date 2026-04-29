@@ -1,33 +1,46 @@
 # 🧪 TESTES DA API - Biblioteca do Usuário GameVerse
 # Este arquivo contém exemplos de como testar meus endpoints
 # Use com REST Client no VS Code ou qualquer ferramenta HTTP
+# IMPORTANTE: Todas as rotas requerem token JWT no header Authorization
 
-### 1. Testar adicionar item manualmente
-POST http://localhost:3005/library/add
+# ============================================
+# VARIÁVEIS
+# ============================================
+@baseUrl = http://localhost:3005
+@token = SEU_TOKEN_JWT_AQUI
+
+### 1. Buscar biblioteca do usuário (GET)
+# Headers necessários: Authorization: Bearer <token>
+GET {{baseUrl}}/library/user/1
+Authorization: Bearer {{token}}
+
+### 2. Ver biblioteca do usuário 2
+GET {{baseUrl}}/library/user/2
+Authorization: Bearer {{token}}
+
+### 3. Adicionar item à biblioteca (POST)
+POST {{baseUrl}}/library/add
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "user_id": 1,
   "type": "game",
   "item_id": 999,
   "title": "Test Game",
   "platform": "Steam"
 }
 
-### 2. Ver biblioteca do usuário 1
-GET http://localhost:3005/library/user/1
-
-### 3. Ver biblioteca do usuário 2
-GET http://localhost:3005/library/user/2
-
 ### 4. Simular pagamento aprovado (integração)
-POST http://localhost:3005/library/integration/payment-approved
+POST {{baseUrl}}/library/integration/payment-approved
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "user_id": 1,
   "type": "gift_card",
   "item_id": 888,
+  "title": "Steam Gift Card $50",
+  "platform": "Steam"
+}
   "title": "Epic Games Gift Card $25",
   "platform": "Epic Games"
 }
